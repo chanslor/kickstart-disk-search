@@ -1,6 +1,6 @@
 #! /bin/bash          
 
-
+INSTALLSIZE=100
 INSTALLDISK=()
 
 while read disk size
@@ -8,19 +8,21 @@ do
 
 #Remove the Letter from sizes
 if [[ $size =~ [G] ]] ; then
-BARE_SIZE=${size//G} #remove the G
+	BARE_SIZE=${size//G} #remove the G
 
 	RAW_SIZE=$(printf '%d\n' $BARE_SIZE  2>/dev/null) #Remove the floating points
 	echo "DISK: $disk SIZE: $RAW_SIZE "
-
 	echo "size has G in it"
 
-	if (($RAW_SIZE > 100 )); then
-	echo "Disk is greater than 100G's"
+	#Is the disk large enough for install
+	if (($RAW_SIZE > $INSTALLSIZE )); then
+	
+	#If it is large enough to install OS, then add to array
+	echo "Disk is greater than $INSTALLSIZE"
 	INSTALLDISK+=($disk)
+
 	else
-	echo "Disk is smaller that 100G's"
-	echo
+	echo "Disk is smaller that $INSTALLSIZE"
 	fi
 
 fi
