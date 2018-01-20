@@ -1,45 +1,43 @@
 #! /bin/bash          
 
-INSTALLSIZE=100
+# lsblk -a -b -o NAME,SIZE
+
+#set the size in bytes
+#107374182400 is 100G
+#100663296 is 96M
+#128035676160 is 119G
+#1000204886016 is 931G
+
+#1 Byte = 8 Bit
+#1 Kilobyte = 1,024 Bytes
+#1 Megabyte = 1,048,576 Bytes
+#1 Gigabyte = 1,073,741,824 Bytes
+#1 Terabyte = 1,099,511,627,776 Bytes
+
+#INSTALLSIZE=107374182400 #100GB
+INSTALLSIZE=128849018880 #120GB
 INSTALLDISK=()
 
 while read disk size
 do          
 
-#Remove the Letter from sizes
-if [[ $size =~ [G] ]] ; then
-	BARE_SIZE=${size//G} #remove the G
-
-	RAW_SIZE=$(printf '%d\n' $BARE_SIZE  2>/dev/null) #Remove the floating points
-	echo "DISK: $disk SIZE: $RAW_SIZE "
-	echo "size has G in it"
+	RAW_SIZE=$(printf '%d\n' $size  2>/dev/null) #Remove the floating points
+	#echo "DISK: $disk SIZE: $RAW_SIZE "
 
 	#Is the disk large enough for install
 	if (($RAW_SIZE > $INSTALLSIZE )); then
 	
 	#If it is large enough to install OS, then add to array
-	echo "Disk is greater than $INSTALLSIZE"
+	echo "Disk $disk is greater than $INSTALLSIZE"
 	INSTALLDISK+=($disk)
 
 	else
-	echo "Disk is smaller that $INSTALLSIZE"
+	echo "Disk $disk is smaller that $INSTALLSIZE"
 	fi
 
-fi
 
-if [[ $size =~ [M] ]] ; then
-echo "size has M in it"
-BARE_SIZE=${size//M}
-fi
-
-if [[ $size =~ [T] ]] ; then
-echo "size has T in it"
-BARE_SIZE=${size//T}
-fi
-
-
-
-done < <(lsblk | egrep "^sd" | awk ' { print $1 " " $4 } ')
+done < <(lsblk -a -b -o NAME,SIZE | egrep "^sd" | awk ' { print $1 " " $2 } ')
+#done < <(lsblk | egrep "^sd" | awk ' { print $1 " " $4 } ')
 
 echo
 echo
