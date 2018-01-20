@@ -1,0 +1,53 @@
+#! /bin/bash          
+
+
+INSTALLDISK=()
+
+while read disk size
+do          
+
+#Remove the Letter from sizes
+if [[ $size =~ [G] ]] ; then
+BARE_SIZE=${size//G} #remove the G
+
+	RAW_SIZE=$(printf '%d\n' $BARE_SIZE  2>/dev/null) #Remove the floating points
+	echo "DISK: $disk SIZE: $RAW_SIZE "
+
+	echo "size has G in it"
+
+	if (($RAW_SIZE > 100 )); then
+	echo "Disk is greater than 100G's"
+	INSTALLDISK+=($disk)
+	else
+	echo "Disk is smaller that 100G's"
+	echo
+	fi
+
+fi
+
+if [[ $size =~ [M] ]] ; then
+echo "size has M in it"
+BARE_SIZE=${size//M}
+fi
+
+if [[ $size =~ [T] ]] ; then
+echo "size has T in it"
+BARE_SIZE=${size//T}
+fi
+
+
+
+done < <(lsblk | egrep "^sd" | awk ' { print $1 " " $4 } ')
+
+echo
+echo
+echo "Search complete."
+
+for i in "${INSTALLDISK[@]}"
+do
+echo $i
+done
+
+echo "${#INSTALLDISK[@]}"
+
+
