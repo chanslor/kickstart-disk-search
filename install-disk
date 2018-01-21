@@ -1,12 +1,6 @@
 #! /bin/bash          
 
-# lsblk -a -b -o NAME,SIZE
-
-#set the size in bytes
-#107374182400 is 100G
-#100663296 is 96M
-#128035676160 is 119G
-#1000204886016 is 931G
+# exec 1> /dev/console 2>&1
 
 #1 Byte = 8 Bit
 #1 Kilobyte = 1,024 Bytes
