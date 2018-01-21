@@ -65,8 +65,8 @@ do
 
 done < <(lsblk -a -b -o NAME,SIZE | egrep "^sd|^hd|^vd" | awk ' { print $1 " " $2 } ')
 
-#clear
-#do_summary
+clear
+do_summary
 
 echo
 echo
@@ -104,6 +104,10 @@ print_final_install_disk () {
 	echo
 }
 
+final_disk_details () {
+	parted -s /dev/$FINALINSTALLDISK print
+}
+
 if [ ${#disk_values[@]} -gt 1 ] ; then
 	echo
 	echo "You have more than one install disk:"
@@ -126,8 +130,10 @@ if [ ${#disk_values[@]} -gt 1 ] ; then
 	done | sort -n -k1 | head -1 | awk ' { print $2 } '
 
 	print_final_install_disk	
+	final_disk_details
 else
 	print_final_install_disk
+	final_disk_details
 fi
 
 echo
