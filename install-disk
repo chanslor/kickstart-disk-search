@@ -18,6 +18,7 @@
 INSTALLSIZE=128849018880 #120GB
 INSTALLDISK=()
 declare -A disk_values
+declare -A small_disks
 declare -A install_values
 
 do_summary () {
@@ -42,11 +43,15 @@ do
 	#Add the vaules to assiocative array
 	#disk_values[$disk]+="$RAW_SIZE"
 	disk_values[$RAW_SIZE]+="$disk" #disk is key
+	INSTALLDISKS+=($disk)
+	TOTALDISKS+=($disk)
 	#2disk_values[$disk]+="$RAW_SIZE" #value is key. This fails,we ended up using pipe to sort
 
 	else
 	echo "Disk $disk is smaller than $INSTALLSIZE"
-	BOOTDISK+=($disk)
+	small_disks[$RAW_SIZE]+="$disk" #disk is key
+	BOOTDISKS+=($disk)
+	TOTALDISKS+=($disk)
 	fi
 
 	#Add the vaules to assiocative array
@@ -65,6 +70,20 @@ echo
 echo -en "\\033[1;32m Search complete.  \\033[0;39m"
 echo
 echo
+
+#Determine if all disk are too small
+tLenD=${#INSTALLDISKS[@]}
+tLenB=${#BOOTDISKS[@]}
+tLenT=${#TOTALDISKS[@]}
+
+if [ ${tLenT} -eq ${tLenB} ] ; then
+	echo "All disks are smaller than the INSTALLSIZE of $INSTALLSIZE"
+	echo "Set the INSTALLSIZE smaller or check that all disks are present."
+	read a
+	exit 1
+fi
+
+
 
 #	echo "This is the size of disk_values ass array:"
 #	echo ${#disk_values[@]}
