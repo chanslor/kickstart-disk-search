@@ -14,9 +14,15 @@
 #1 Gigabyte = 1,073,741,824 Bytes
 #1 Terabyte = 1,099,511,627,776 Bytes
 
-#INSTALLSIZE=107374182400 #100GB
-INSTALLSIZE=128849018880 #120GB
+INSTALLSIZE=107374182400 #100GB
+#INSTALLSIZE=128849018880 #120GB
 INSTALLDISK=()
+
+do_summary () {
+	echo
+	lsblk -a -i
+	echo
+}
 
 while read disk size
 do          
@@ -27,27 +33,66 @@ do
 	#Is the disk large enough for install
 	if (($RAW_SIZE > $INSTALLSIZE )); then
 	
-	#If it is large enough to install OS, then add to array
+	#If disk is large enough to install OS, then add to array
 	echo "Disk $disk is greater than $INSTALLSIZE"
 	INSTALLDISK+=($disk)
 
 	else
 	echo "Disk $disk is smaller that $INSTALLSIZE"
+	BOOTDISK+=($disk)
 	fi
 
 
 done < <(lsblk -a -b -o NAME,SIZE | egrep "^sd" | awk ' { print $1 " " $2 } ')
 #done < <(lsblk | egrep "^sd" | awk ' { print $1 " " $4 } ')
 
+clear
+do_summary
+
 echo
 echo
-echo "Search complete."
+echo -en "\\033[1;32m Search complete.  \\033[0;39m"
+echo
+echo
 
 for i in "${INSTALLDISK[@]}"
 do
-echo $i
+echo "Choices for OS install are: $i"
 done
 
-echo "${#INSTALLDISK[@]}"
+for i in "${BOOTDISK[@]}"
+do
+echo "Your boot device is possibly: $i"
+done
+
+#echo "${#INSTALLDISK[@]}"
+if [ ${#INSTALLDISK[@]} -gt 1 ] ; then
+	echo
+	echo "You have more than one install disk."
+
+	for i in "${INSTALLDISK[@]}"
+	do
+	echo $i
+	done
+
+	echo "The smaller of the group will be used for OS installation."
+else
+	FINALINSTALLDISK=${INSTALLDISK[0]}
+	echo
+	echo -e "\\033[1;42m We will continue with installation on: \\033[0;39m $FINALINSTALLDISK"
+fi
+
+echo
+echo
+
+
+
+
+
+
+
+
+
+
 
 
