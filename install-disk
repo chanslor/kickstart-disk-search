@@ -55,7 +55,7 @@ do
 	#disk_values=([apple]='100 dollars' [orange]='150 dollars')
 
 
-done < <(lsblk -a -b -o NAME,SIZE | egrep "^sd" | awk ' { print $1 " " $2 } ')
+done < <(lsblk -a -b -o NAME,SIZE | egrep "^sd|^hd|^vd" | awk ' { print $1 " " $2 } ')
 
 #clear
 #do_summary
