@@ -15,8 +15,11 @@
 #1 Terabyte = 1,099,511,627,776 Bytes
 
 #INSTALLSIZE=107374182400 #100GB
-INSTALLSIZE=128849018880 #120GB
+#INSTALLSIZE=128849018880 #120GB
+INSTALLSIZE=20401094656 #19GB for testing vm's
+
 INSTALLDISK=()
+
 declare -A disk_values
 declare -A small_disks
 declare -A install_values
@@ -89,6 +92,18 @@ fi
 #	echo ${#disk_values[@]}
 
 #echo "${#INSTALLDISK[@]}"
+
+print_final_install_disk () {
+
+	FINALINSTALLDISK=$(
+	for K in "${!disk_values[@]}"
+	do echo "$K ${disk_values[$K]}"
+	done | sort -n -k1 | head -1 | awk ' { print $2 } ')
+	echo
+	echo -e "\\033[1;42m We will continue with installation on: \\033[0;39m $FINALINSTALLDISK"
+	echo
+}
+
 if [ ${#disk_values[@]} -gt 1 ] ; then
 	echo
 	echo "You have more than one install disk:"
@@ -110,24 +125,11 @@ if [ ${#disk_values[@]} -gt 1 ] ; then
 	do echo "$K ${disk_values[$K]}"
 	done | sort -n -k1 | head -1 | awk ' { print $2 } '
 
-	FINALINSTALLDISK=$(
-	for K in "${!disk_values[@]}"
-	do echo "$K ${disk_values[$K]}"
-	done | sort -n -k1 | head -1 | awk ' { print $2 } ')
-	echo
-	echo -e "\\033[1;42m We will continue with installation on: \\033[0;39m $FINALINSTALLDISK"
-	
+	print_final_install_disk	
 else
-	FINALINSTALLDISK=${disk_values[0]}
-	echo
-	echo -e "\\033[1;42m We will continue with installation on: \\033[0;39m $FINALINSTALLDISK"
-		KEYS=(${!disk_values[@]}) # Make a normal array containing all the keys in the associative array
-		echo ${disk_values[${KEYS[0]}]}
+	print_final_install_disk
 fi
 
 echo
-echo
-
-
 
 
