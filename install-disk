@@ -1,7 +1,5 @@
 #! /bin/bash          
 
-# exec 1> /dev/console 2>&1
-
 #1 Byte = 8 Bit
 #1 Kilobyte = 1,024 Bytes
 #1 Megabyte = 1,048,576 Bytes
@@ -9,7 +7,9 @@
 #1 Terabyte = 1,099,511,627,776 Bytes
 
 # drive must be larger than INSTALLSIZE to install OS
+# Note: the lsblk will read the entire size of device
 #INSTALLSIZE=943718400  #900MB
+#INSTALLSIZE=64424509440  #60GB
 #INSTALLSIZE=107374182400 #100GB
 #INSTALLSIZE=128849018880 #120GB
 INSTALLSIZE=20401094656 #19GB for testing vm's
@@ -30,7 +30,7 @@ while read disk size
 do          
 
 	RAW_SIZE=$(printf '%d\n' $size  2>/dev/null) #Remove the floating points
-	#echo "DISK: $disk SIZE: $RAW_SIZE "
+	echo "DISK: $disk SIZE: $RAW_SIZE "
 
 	#Is the disk large enough for install
 	if (($RAW_SIZE > $INSTALLSIZE )); then
@@ -78,7 +78,6 @@ tLenT=${#TOTALDISKS[@]}
 if [ ${tLenT} -eq ${tLenB} ] ; then
 	echo "All disks are smaller than the INSTALLSIZE of $INSTALLSIZE"
 	echo "Set the INSTALLSIZE smaller or check that all disks are present."
-	read a
 	exit 1
 fi
 
@@ -97,6 +96,7 @@ print_final_install_disk () {
 	done | sort -n -k1 | head -1 | awk ' { print $2 } ')
 	echo
 	echo -e "\\033[1;42m We will continue with installation on: \\033[0;39m $FINALINSTALLDISK"
+	sleep 10
 	echo
 }
 
